@@ -87,6 +87,10 @@ class PhpSpreadSheet{
                 ]
        ],
     ];
+    
+    /*
+    create an object and pass arg which gives you same sheet name    
+    */
     public function __construct($sheetName = "test")
     {
         $this->spreadsheet = new Spreadsheet();
@@ -119,6 +123,9 @@ class PhpSpreadSheet{
         }
     }
 
+    /*
+    Set properties like : title, subject, descreption
+    */
     public function setProperty($title = "", $subject = "", $descreption = "Demo"){
         $this->spreadsheet->getProperties()->setCreator('test')
         ->setLastModifiedBy('test')
@@ -133,12 +140,7 @@ class PhpSpreadSheet{
         $this->startCell = $cellAddress;
     }
 
-    /*
-    Coordinate::coordinateFromString('A2')
-    echo Coordinate::stringFromColumnIndex(1);
-        echo "<br>";
-        echo Coordinate::columnIndexFromString('E');
-        die;*/
+    
     private function getRowNum($cell){
 
      /*preg_match('/(\d+)/', $cell, $nums);
@@ -160,14 +162,24 @@ class PhpSpreadSheet{
     }
 
 
+    /*
+    Get cell last cell positoin of after setting the data
+    */
     public function lastCellAddress(){
         return $this->startCell;
     }
 
+    /*
+    create row gaps 
+    pass number of rows in argument
+    */
     public function setRowGap($numberRows = 0){
         $this->startCell = $this->getAlpha($this->startCell).($this->getRowNum($this->startCell)+$numberRows);
     }
 
+    /*
+    Set Excel title here
+    */
     public function setTitle($titleName, $mergeTill, $startCell ,$styleName = ""){
 
         if($startCell != ""){
@@ -214,7 +226,14 @@ class PhpSpreadSheet{
     }
 
 
-    /*$colData = [
+    /*
+    
+    Pass headerdata in array OR if you looking for cusomised width of column.
+    true : set automatically based on content
+    false : default width
+    integer : 15 // gives you exact number of width
+    
+    $colData = [
         ['col_name'=>'first',
           'width'=>true | number
         ],
@@ -314,7 +333,10 @@ class PhpSpreadSheet{
             );
     }
 
-    /*---pass NULL if want to blank cell---*/
+    /*
+    ---pass data in array 
+    ---null if want to blank cell
+    */
     public function setArrayData($arrayData = [], $startCell = "", $styleName = ""){
 
         if(!empty($arrayData)){
@@ -356,12 +378,7 @@ class PhpSpreadSheet{
         unset($this->spreadsheet);
     }
 
-    /*public function getShreadSheet(){
-        return $this->spreadsheet;
-    }
-    public function setSpreadSheet($spreadsheet){
-        $this->spreadsheet = $spreadsheet;
-    }*/
+
 
     public function write($fileName = "sample", $filedir = "booking_reports", $pdfOrExcel = "excel"){
 
