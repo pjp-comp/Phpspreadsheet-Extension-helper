@@ -1,16 +1,10 @@
 <?php
 
-
-require ROOT.'/vendor/autoload.php';
-
-use Cake\View\ViewBuilder;
-use Cake\Filesystem\Folder;
-use Cake\Filesystem\File;
+require_once('vendor/autoload.php');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -93,7 +87,7 @@ class PhpSpreadSheet{
                 ]
        ],
     ];
-    public function __construct($sheetName = "vrmanaged")
+    public function __construct($sheetName = "test")
     {
         $this->spreadsheet = new Spreadsheet();
         $this->spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
@@ -110,7 +104,7 @@ class PhpSpreadSheet{
         // $this->sheet = $this->spreadsheet->getActiveSheet()->getProtection()->setSheet(true);
     }
 
-    public function setSheetTitle($title = "Vrmanaged"){
+    public function setSheetTitle($title = "test"){
        $this->sheet = $this->spreadsheet->getActiveSheet()->setTitle($title);
     }
 
@@ -126,8 +120,8 @@ class PhpSpreadSheet{
     }
 
     public function setProperty($title = "", $subject = "", $descreption = "Demo"){
-        $this->spreadsheet->getProperties()->setCreator('Vrmanaged')
-        ->setLastModifiedBy('Vrmanaged')
+        $this->spreadsheet->getProperties()->setCreator('test')
+        ->setLastModifiedBy('test')
         ->setTitle($title)
         ->setSubject($subject)
         ->setDescription($descreption);
@@ -369,18 +363,7 @@ class PhpSpreadSheet{
         $this->spreadsheet = $spreadsheet;
     }*/
 
-    public function write($fileName = "vrmanaged", $filedir = "booking_reports", $pdfOrExcel = "excel"){
-
-        /*if(!is_dir(WWW_ROOT.$filedir.'/')){
-            $dir = new Folder(WWW_ROOT.$filedir.'/', true, 0775);
-        }
-
-        if($fileName =="vrmanaged"){
-            $fileName = "vrmanaged";
-        }else{
-            $fileName = $fileName;
-        }*/
-        //unlink(WWW_ROOT.$filedir.'/'.$fileName);
+    public function write($fileName = "sample", $filedir = "booking_reports", $pdfOrExcel = "excel"){
 
 
         $path = WWW_ROOT.$filedir.'/'.$fileName;
