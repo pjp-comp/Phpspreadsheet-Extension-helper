@@ -1,4 +1,4 @@
-# Phpspreadsheet_PJP
+# phpspreadsheet_simpler
 
 Here https://github.com/PHPOffice/PhpSpreadsheet is being used and made simpler for genral purpose use.
 
