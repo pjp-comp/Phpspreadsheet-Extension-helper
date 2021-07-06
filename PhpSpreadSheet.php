@@ -28,6 +28,7 @@ class PhpSpreadSheet{
     private $writer ;
     private $rowNum = 1;
     private $startCell = "A1";
+    private $removeMainSheet = false;
     private $STYLES = [
 
        'TABLE_TITLE'=>[
@@ -44,9 +45,23 @@ class PhpSpreadSheet{
                     'color' => ['argb' => 'FFCCFFCC'],
                 ]*/
         ],
+        'TABLE_TITLE_CENTER'=>[
+            'font' => [
+                'bold' => true,
+                //'color' => ['rgb' => '088DCF'],
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+            /*'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => ['argb' => 'FFCCFFCC'],
+            ]*/
+        ],
        'TABLE_HEAD' => [
                 'font' => [
-                            'bold' => true,
+                            //'bold' => true,
                             'color' => ['rgb' => 'FFFFFF'],
                             'size' => 10
                         ],
@@ -62,7 +77,7 @@ class PhpSpreadSheet{
        ],
        'TABLE_HEAD_LIGHT' => [
                 'font' => [
-                            //'bold' => true,
+                            // 'bold' => true,
                             'color' => ['rgb' => 'FFFFFF'],
                             'size' => 10
                         ],
@@ -87,12 +102,13 @@ class PhpSpreadSheet{
                 ]
        ],
     ];
-    
+
     /*
-    create an object and pass arg which gives you same sheet name    
-    */
-    public function __construct($sheetName = "test")
+     * $removeMainSheet = false : set true only if you surely multisheet
+     * */
+    public function __construct($sheetName = "vrmanaged", $removeMainSheet = false)
     {
+        $this->removeMainSheet = $removeMainSheet;
         $this->spreadsheet = new Spreadsheet();
         $this->spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
         $this->spreadsheet->getDefaultStyle()->getFont()->setSize(10);
@@ -110,17 +126,33 @@ class PhpSpreadSheet{
 
     public function setSheetTitle($title = "test"){
        $this->sheet = $this->spreadsheet->getActiveSheet()->setTitle($title);
+       return $this;
     }
 
     public function setActiveSheet($name){
         $this->sheet = $this->spreadsheet->setActiveSheetIndexByName($name);
     }
 
-    public function createNewSheet($name, $setActive = false){
-        $myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($this->spreadsheet, $name);
-        if($setActive){
-            $this->spreadsheet->addSheet($myWorkSheet, 0);
+    public function createNewSheet($name,$setActive = false , $sheetIndex = 0 , $startCell = 'A1'){
+
+        if($this->removeMainSheet){
+            $this->spreadsheet->removeSheetByIndex(0);
+            $this->removeMainSheet = false;
         }
+
+        $myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($this->spreadsheet, $name);
+        $this->spreadsheet->addSheet($myWorkSheet, $sheetIndex);
+
+
+        if($setActive){
+            $this->startCell = ($startCell == '') ? 'A1' : $startCell;
+            $this->setActiveSheet($name);
+            /*echo "<pre>";
+            print_r($this->spreadsheet->getActiveSheet());
+            die;*/
+
+        }
+         return $this;
     }
 
     /*
@@ -140,7 +172,12 @@ class PhpSpreadSheet{
         $this->startCell = $cellAddress;
     }
 
-    
+    /*
+    Coordinate::coordinateFromString('A2')
+    echo Coordinate::stringFromColumnIndex(1);
+        echo "<br>";
+        echo Coordinate::columnIndexFromString('E');
+        die;*/
     private function getRowNum($cell){
 
      /*preg_match('/(\d+)/', $cell, $nums);
@@ -170,7 +207,7 @@ class PhpSpreadSheet{
     }
 
     /*
-    create row gaps 
+    create row gaps
     pass number of rows in argument
     */
     public function setRowGap($numberRows = 0){
@@ -227,12 +264,12 @@ class PhpSpreadSheet{
 
 
     /*
-    
+
     Pass headerdata in array OR if you looking for cusomised width of column.
     true : set automatically based on content
     false : default width
     integer : 15 // gives you exact number of width
-    
+
     $colData = [
         ['col_name'=>'first',
           'width'=>true | number
@@ -255,10 +292,28 @@ class PhpSpreadSheet{
             $this->startCell = $startCell;
         }
 
+
+        $columNumber = $this->getColumnNumber($this->getAlpha($this->startCell));
+        $tillCol =  $columNumber + (count($arrayData) - 1);
+
+        $col = $this->getColumn($tillCol);
+        $row = $this->getRowNum($this->startCell);
+
+
+        if($styleName != ""){
+            $endCell = $col.$row;
+            $this->applyStyle($styleName , $this->startCell, $endCell);
+        }
+
+
         $column = $this->getAlpha($this->startCell);
         $row = $this->getRowNum($this->startCell);
 
         foreach ($arrayData as $coldata){
+
+            if(isset($coldata['style']) && !empty($coldata['style'])){
+                $this->spreadsheet->getActiveSheet()->getStyle($column.$row)->applyFromArray($coldata['style']);
+            }
 
             if(isset($coldata['width']) && is_numeric($coldata['width'])){
                 $this->spreadsheet->getActiveSheet()->getColumnDimension($column)->setWidth($coldata['width']);
@@ -315,7 +370,8 @@ class PhpSpreadSheet{
             ->fromArray(
                 $arrayData,
                 NULL,
-                ($startCell != "") ? $startCell : $this->startCell
+                ($startCell != "") ? $startCell : $this->startCell,
+                true
             );
         $this->rowNum = $row+1;
         $this->startCell = $this->getAlpha($this->startCell).$this->rowNum;
@@ -334,7 +390,7 @@ class PhpSpreadSheet{
     }
 
     /*
-    ---pass data in array 
+    ---pass data in array
     ---null if want to blank cell
     */
     public function setArrayData($arrayData = [], $startCell = "", $styleName = ""){
@@ -350,8 +406,9 @@ class PhpSpreadSheet{
             $this->spreadsheet->getActiveSheet()
                 ->fromArray(
                     $arrayData,
-                    NULL,
-                    ($startCell != "") ? $startCell : $this->startCell
+                    null,
+                    ($startCell != "") ? $startCell : $this->startCell,
+                    true
                 );
 
             $this->rowNum = $row + count($arrayData);
@@ -383,7 +440,7 @@ class PhpSpreadSheet{
     public function write($fileName = "sample", $filedir = "booking_reports", $pdfOrExcel = "excel"){
 
 
-        $path = WWW_ROOT.$filedir.'/'.$fileName;
+        //$path = WWW_ROOT.$filedir.'/'.$fileName;
         if($pdfOrExcel == "pdf"){
 //            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->spreadsheet, 'Pdf');
 //            $writer->save($path);
@@ -426,8 +483,14 @@ class PhpSpreadSheet{
         // $spreadsheet->getActiveSheet()->getStyle('A3')-> applyFromArray($styleArray);
         // $spreadsheet->getActiveSheet()->getStyle('A1:E1')->getFill()->setFillType(Fill::FILL_SOLID);
         // $spreadsheet->getActiveSheet()->getStyle('A1:E1')->getFill()->getStartColor()->setARGB('FF808080');
-        if(isset($this->STYLES[$styleName])){
+
+        // set custom style
+        if(is_array($styleName) && !is_string($styleName)){
+            $this->spreadsheet->getActiveSheet()->getStyle($rangesStart.':'.$rangeEnd)->applyFromArray($styleName);
+        }else if(isset($this->STYLES[$styleName])){
             $this->spreadsheet->getActiveSheet()->getStyle($rangesStart.':'.$rangeEnd)->applyFromArray($this->STYLES[$styleName]);
+        }else{
+
         }
     }
 

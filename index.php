@@ -6,7 +6,7 @@ require_once('PhpSpreadSheet.php');
 
             // to make width flexible OR pass simple array to set header
             $headings = [
-                ['col_name'=>'first fsad dafsad dafsd f adfas',
+                ['col_name'=>'First column name to adjust width',
                   'width'=>true
                     ],
                  ['col_name'=>'second',
@@ -30,18 +30,18 @@ require_once('PhpSpreadSheet.php');
             $excel->setProperty("Pragnesh", "generate excel");
 
 
-            $excel->setTitle("Hello dudne nice to meet you", 4, "B2", "TABLE_TITLE");
+            $excel->setTitle("Hello First Table", 4, "B2", "TABLE_TITLE");
             $excel->setHeading($headings,"",'TABLE_HEAD');
             $excel->setArrayData($arrayData);
 //            $excel->generateExcelFromHtml();
             $excel->setRowGap(4);
-            $excel->setTitle("Hello again", 4, $excel->lastCellAddress(), "TABLE_TITLE");
+            $excel->setTitle("Hello Second Table", 4, $excel->lastCellAddress(), "TABLE_TITLE");
             $excel->setHeading($headings,"",'TABLE_HEAD');
             $excel->setArrayData($arrayData);
             $excel->setHeading($totaling,"",'TABLE_HEAD_LIGHT');
 
             $excel->write();
 
-            die('fsa');
+            die('DONE');
 
 ?>
