@@ -13,7 +13,7 @@ Features :
 2. Either set custom style by passing from you code. sample code given in multisheet.php or use custom style by passing just its name.
 3. Print data in multisheet.
 
-            <code>
+            
             // pass custom style instead of style name from calling method
             $customStyle = [
                 'font' => [
@@ -83,5 +83,5 @@ Features :
             $excel->setHeading($totaling,"",'TABLE_HEAD_LIGHT');
 
             $excel->write();
-          </code>
+          
 
