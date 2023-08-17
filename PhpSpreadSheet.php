@@ -1,10 +1,23 @@
 <?php
 
-require_once('vendor/autoload.php');
+
+namespace App\Utility;
+
+ini_set('memory_limit', '-1');
+ini_set('max_execution_time', 3000);
+
+
+//require_once(ROOT . '/vendor/box/spout/src/Spout/Autoloader/autoload.php');
+require ROOT.'/vendor/autoload.php';
+
+use Cake\View\ViewBuilder;
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -23,7 +36,82 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class PhpSpreadSheet{
 
-    private $spreadsheet;
+/*
+
+            // pass custom style instead of style name from calling method
+            $customStyle = [
+                'font' => [
+                    'bold' => true,
+                    'size' => 10,
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                ]
+            ];
+
+
+            // for multisheet --start
+            $excel = new PhpSpreadSheet('Pragnesh', true);
+            $sheets = ['one', 'two', 'three'];
+            foreach ($sheets as $key=>$sheet){
+                $excel->createNewSheet($sheet, true, $key);
+                $excel->setHeading($headings,"",'TABLE_HEAD');
+                $excel->setArrayData($arrayData);
+            }
+            // for multisheet --false
+
+
+
+            $excel = new PhpSpreadSheet('Pragnesh');
+
+            // pass individual header column style
+            $headings = [
+                 ['col_name'=>'first fsad dafsad dafsd f adfas',
+                  'width'=>true,
+                  'style'=>[
+                        'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'color' => ['rgb' => '9c9c9c'],
+                            ]
+                  ]
+                 ],,
+                 ['col_name'=>'second',
+                  'width'=>20
+                    ],
+                 ['col_name'=>'third',
+                  'width'=>30
+                    ],
+                 ['col_name'=>'forth',
+                  'width'=>false
+                    ]
+            ];
+            $arrayData = [
+                ['Q1',   12,   15,   21],
+                ['Q2',   56,   73,   86],
+                ['Q3',   52,   61,   69],
+                ['Q4',   30,   32,    null],
+            ];
+            $totaling = [10,30,50,60];
+
+            $excel->setProperty("Pragnesh", "generate excel");
+
+
+            $excel->setTitle("Hello dudne nice to meet you", 4, "B2", "TABLE_TITLE");
+            $excel->setHeading($headings,"",'TABLE_HEAD');
+            $excel->setArrayData($arrayData);
+//            $excel->generateExcelFromHtml();
+            $excel->setRowGap(4);
+            $excel->setTitle("Hello again", 4, $excel->lastCellAddress(), "TABLE_TITLE");
+            $excel->setHeading($headings,"",'TABLE_HEAD');
+            $excel->setArrayData($arrayData);
+            $excel->setHeading($totaling,"",'TABLE_HEAD_LIGHT');
+
+            $excel->write();
+
+            die('fsa');*/
+
+
+    public $spreadsheet;
     private $sheet;
     private $writer ;
     private $rowNum = 1;
@@ -131,6 +219,7 @@ class PhpSpreadSheet{
 
     public function setActiveSheet($name){
         $this->sheet = $this->spreadsheet->setActiveSheetIndexByName($name);
+        return $this;
     }
 
     public function createNewSheet($name,$setActive = false , $sheetIndex = 0 , $startCell = 'A1'){
@@ -249,7 +338,7 @@ class PhpSpreadSheet{
 
 
         $tillCol = ($this->getRowNum($this->startCell) + $mergeTill - 1);
-        $col = $this->getColumn($tillCol);
+        $col = $this->getColumn($mergeTill);
         $row = $this->getRowNum($this->startCell);
         $endCell = $col.$row;
 
