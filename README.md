@@ -9,7 +9,7 @@ Just pass data in array and get excel downloaded.
 Here you can extend functionalities.
 
 What you can do using this extension code ?
-1. You can make make spreadsheet in a very simpler way. Just create an object and pass data as given in example.
+1. You can make a excel sheet in a very simpler way. Just create an object and pass data as given in example.
 2. Simple way to format table data with different styles given as heading. Also you can provide width as per your requirement.
 3. Store data by creating multisheets. 
 
